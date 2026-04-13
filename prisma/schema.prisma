@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("STAFF")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  createdEntries SalesEntry[] @relation("EntryCreatedBy")
+  updatedEntries SalesEntry[] @relation("EntryUpdatedBy")
+  expenses       Expense[]    @relation("ExpenseCreatedBy")
+
+  @@map("users")
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  expenseDate DateTime @map("expense_date")
+  month       Int
+  year        Int
+  category    String   // FOOD | RENT | ELECTRICITY | SALARY | GAS | OTHER
+  description String
+  amount      Decimal
+  notes       String?
+  createdById String?  @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdBy User? @relation("ExpenseCreatedBy", fields: [createdById], references: [id])
+
+  @@index([month, year])
+  @@map("expenses")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  color     String   @default("#f97316")
+  icon      String?
+  isActive  Boolean  @default(true) @map("is_active")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  items           Item[]
+  salesEntryLines SalesEntryLine[]
+
+  @@map("categories")
+}
+
+model Item {
+  id               String  @id @default(cuid())
+  categoryId       String  @map("category_id")
+  name             String
+  slug             String  @unique
+  defaultUnitPrice Decimal @default(0) @map("default_unit_price")
+  isActive         Boolean @default(true) @map("is_active")
+  sortOrder        Int     @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  category        Category         @relation(fields: [categoryId], references: [id])
+  salesEntryLines SalesEntryLine[]
+
+  @@map("items")
+}
+
+model SalesEntry {
+  id          String   @id @default(cuid())
+  entryDate   DateTime @map("entry_date")
+  month       Int
+  year        Int
+  notes       String?
+  isDraft     Boolean  @default(false) @map("is_draft")
+  createdById String?  @map("created_by_id")
+  updatedById String?  @map("updated_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdBy User? @relation("EntryCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("EntryUpdatedBy", fields: [updatedById], references: [id])
+
+  lines SalesEntryLine[]
+
+  @@unique([entryDate])
+  @@index([month, year])
+  @@map("sales_entries")
+}
+
+model SalesEntryLine {
+  id           String  @id @default(cuid())
+  salesEntryId String  @map("sales_entry_id")
+  categoryId   String  @map("category_id")
+  itemId       String  @map("item_id")
+  quantity     Int     @default(0)
+  unitPrice    Decimal @map("unit_price")
+  amount       Decimal
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  salesEntry SalesEntry @relation(fields: [salesEntryId], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [categoryId], references: [id])
+  item       Item       @relation(fields: [itemId], references: [id])
+
+  @@index([salesEntryId])
+  @@index([itemId])
+  @@index([categoryId])
+  @@map("sales_entry_lines")
+}
+
+model Setting {
+  id             String   @id @default(cuid())
+  shopName       String   @default("Shaahi Biryani") @map("shop_name")
+  currency       String   @default("PKR")
+  currencySymbol String   @default("₨") @map("currency_symbol")
+  address        String?
+  phone          String?
+  logoUrl        String?  @map("logo_url")
+  taxEnabled     Boolean  @default(false) @map("tax_enabled")
+  taxRate        Decimal  @default(0) @map("tax_rate")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
