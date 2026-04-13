@@ -125,7 +125,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@shaahi.com"
+                placeholder="admin@shaahirestaurant.com"
                 autoComplete="email"
                 className={cn("h-11", errors.email && "border-destructive")}
                 {...register("email")}
@@ -166,11 +166,6 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
-
-          <div className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground mb-1">Demo admin credentials</p>
-            <p>admin@shaahi.com / admin123</p>
-          </div>
 
           <p className="text-sm text-muted-foreground text-center">
             Not an admin?{" "}

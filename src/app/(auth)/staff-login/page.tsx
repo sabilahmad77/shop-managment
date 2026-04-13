@@ -98,7 +98,7 @@ export default function StaffLoginPage() {
             <label className="text-sm font-medium text-slate-300">Email address</label>
             <input
               type="email"
-              placeholder="staff@shaahi.com"
+              placeholder="cashier@shaahirestaurant.com"
               autoComplete="email"
               className={cn(
                 "w-full h-11 bg-slate-900/80 border rounded-lg px-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all",
@@ -149,11 +149,6 @@ export default function StaffLoginPage() {
           </button>
         </form>
 
-        {/* Demo credentials */}
-        <div className="mt-6 rounded-lg bg-slate-900/60 border border-slate-700 p-3 text-xs text-slate-400">
-          <p className="font-medium text-slate-300 mb-1">Demo staff credentials</p>
-          <p>staff@shaahi.com / staff123</p>
-        </div>
       </div>
 
       {/* Admin link */}

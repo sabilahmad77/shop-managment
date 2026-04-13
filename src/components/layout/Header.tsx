@@ -62,7 +62,7 @@ export function Header({ title, userName = "User", userRole = "STAFF" }: HeaderP
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive" onClick={() => signOut({ callbackUrl: "/" })}>
+            <DropdownMenuItem className="text-destructive" onClick={() => signOut({ callbackUrl: "/login" })}>
               Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
