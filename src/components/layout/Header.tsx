@@ -9,6 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "next-auth/react";
 
+/** Redirects to /login on the live domain — never localhost */
+function handleSignOut() {
+  signOut({ callbackUrl: `${window.location.origin}/login` });
+}
+
 interface HeaderProps {
   title: string;
   userName?: string;
@@ -62,7 +67,7 @@ export function Header({ title, userName = "User", userRole = "STAFF" }: HeaderP
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive" onClick={() => signOut({ callbackUrl: "/login" })}>
+            <DropdownMenuItem className="text-destructive" onClick={handleSignOut}>
               Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>

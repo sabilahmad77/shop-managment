@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+
+/** Always redirects to /login on the CURRENT domain — never localhost */
+function useSignOut() {
+  return useCallback(() => {
+    signOut({ callbackUrl: `${window.location.origin}/login` });
+  }, []);
+}
 import {
   LayoutDashboard, ClipboardList, Tag, ShoppingBag, BarChart3,
   Settings, LogOut, ChefHat, Menu, X, ChevronRight,
@@ -80,7 +87,8 @@ function NavLink({ item, active, collapsed }: {
 
 // ── Desktop sidebar ────────────────────────────────────────────────────────────
 export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
-  const pathname = usePathname();
+  const pathname  = usePathname();
+  const doSignOut = useSignOut();
   const { data: session } = useSession();
   const role = (session?.user as any)?.role ?? "STAFF";
   const isAdmin = role === "ADMIN";
@@ -132,7 +140,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center justify-center p-2 rounded-lg text-sidebar-foreground/50 hover:text-red-400 hover:bg-sidebar-accent transition-colors">
+                <button onClick={() => doSignOut()} className="w-full flex items-center justify-center p-2 rounded-lg text-sidebar-foreground/50 hover:text-red-400 hover:bg-sidebar-accent transition-colors">
                   <LogOut className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -140,7 +148,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
             </Tooltip>
           </TooltipProvider>
         ) : (
-          <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/60 hover:text-red-400 hover:bg-sidebar-accent transition-colors text-sm font-medium">
+          <button onClick={() => doSignOut()} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/60 hover:text-red-400 hover:bg-sidebar-accent transition-colors text-sm font-medium">
             <LogOut className="w-5 h-5" />Sign out
           </button>
         )}
@@ -152,7 +160,8 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
 // ── Mobile drawer sidebar (kept for legacy / fallback) ─────────────────────────
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname  = usePathname();
+  const doSignOut = useSignOut();
   const { data: session } = useSession();
   const role = (session?.user as any)?.role ?? "STAFF";
   const isAdmin = role === "ADMIN";
@@ -198,7 +207,7 @@ export function MobileSidebar() {
         </nav>
 
         <div className="p-3 border-t border-sidebar-border">
-          <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sidebar-foreground/60 hover:text-red-400 hover:bg-sidebar-accent transition-colors text-sm font-medium">
+          <button onClick={() => doSignOut()} className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sidebar-foreground/60 hover:text-red-400 hover:bg-sidebar-accent transition-colors text-sm font-medium">
             <LogOut className="w-5 h-5" />Sign out
           </button>
         </div>
@@ -209,7 +218,8 @@ export function MobileSidebar() {
 
 // ── Mobile bottom tab bar ──────────────────────────────────────────────────────
 export function MobileBottomNav() {
-  const pathname = usePathname();
+  const pathname  = usePathname();
+  const doSignOut = useSignOut();
   const { data: session } = useSession();
   const [moreOpen, setMoreOpen] = useState(false);
   const role = (session?.user as any)?.role ?? "STAFF";

@@ -11,10 +11,12 @@ const loginSchema = z.object({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
+  // AUTH_URL / NEXTAUTH_URL must be set to the production domain in Vercel env vars
   session: { strategy: "jwt" },
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn:   "/login",
+    signOut:  "/login",
+    error:    "/login",
   },
   providers: [
     CredentialsProvider({
